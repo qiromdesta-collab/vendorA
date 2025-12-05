@@ -4,7 +4,6 @@ const cors = require("cors");
 const pool = require("./db.js"); 
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const {authenticateToken,authorizeRole,} = require("./middleware/authMiddleware.js");
 const app = express();
 const PORT = process.env.PORT || 3300;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -161,7 +160,7 @@ app.get("/movies/:id", async (req, res, next) => {
   }
 });
 
-app.post("/movies", authenticateToken, async (req, res, next) => {
+app.post("/movies",  async (req, res, next) => {
   const { title, director_id, year } = req.body;
   if (!title || !director_id || !year) {
     return res
@@ -181,7 +180,7 @@ app.post("/movies", authenticateToken, async (req, res, next) => {
 
 app.put(
   "/movies/:id",
-  [authenticateToken, authorizeRole("admin")],
+  
   async (req, res, next) => {
     const { title, director_id, year } = req.body;
     const sql =
@@ -205,7 +204,7 @@ app.put(
 
 app.delete(
   "/movies/:id",
-  [authenticateToken, authorizeRole("admin")],
+  
   async (req, res, next) => {
     const sql = "DELETE FROM movies WHERE id = $1 RETURNING *";
     try {
@@ -251,7 +250,7 @@ app.get("/directors/:id", async (req, res, next) => {
   }
 });
 
-app.post("/directors", authenticateToken, async (req, res, next) => {
+app.post("/directors",  async (req, res, next) => {
   const { name, birthYear } = req.body;
   if (!name || !birthYear) {
     return res.status(400).json({ error: "name dan birthYear wajib diisi" });
@@ -268,7 +267,7 @@ app.post("/directors", authenticateToken, async (req, res, next) => {
 
 app.put(
   "/directors/:id",
-  [authenticateToken, authorizeRole("admin")],
+  
   async (req, res, next) => {
     const { name, birthYear } = req.body;
     const sql =
@@ -287,7 +286,7 @@ app.put(
 
 app.delete(
   "/directors/:id",
-  [authenticateToken, authorizeRole("admin")],
+  
   async (req, res, next) => {
     const sql = "DELETE FROM directors WHERE id = $1 RETURNING *";
     try {
@@ -311,4 +310,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Terjadi kesalahan pada server" });
 });
 
-app.listen(PORT,() => console.log("Server berjalan di port ${PORT"));
+app.listen(PORT,() => console.log(`Server berjalan di port ${PORT}`));
